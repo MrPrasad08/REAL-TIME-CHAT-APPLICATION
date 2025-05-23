@@ -1,34 +1,34 @@
-const express = require( 'express');
+const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
-const cors = require( 'cors');
-0
-const app = express();
-app.use (cors());
+const cors = require('cors');
 
-const server = http. createServer (app);
+const app = express();
+app.use(cors());
+
+const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-wss. on ('connection', (ws) => { 
-    console.log ('New client connected');
+wss.on('connection', (ws) => {
+  console.log('New client connected');
 
-    ws.on('message', (message) => {
-        console.log (`Received message: ${message}`);
+  ws.on('message', (message) => {
+    console.log(`Received message: ${message}`);
 
-        wss.clients.forEach((client) => {
-            if(client.readyState === WebSocket.OPEN) {
-
-                client.send (message.toString());
-            }
-        });
+    // Broadcast the message to all connected clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message.toString());
+      }
     });
-                
-    ws.on ('close', () => { 
-        console.log( 'Client disconnected');
-    });
+  });
+
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
 });
 
 const PORT = 5000;
-server.listen (PORT, () => {
-    console.log ('Server is listening on port ${PORT}');
+server.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
